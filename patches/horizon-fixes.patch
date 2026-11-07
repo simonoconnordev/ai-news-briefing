@@ -1,0 +1,45 @@
+diff --git a/src/ai/client.py b/src/ai/client.py
+index 818ae0f..81bd022 100644
+--- a/src/ai/client.py
++++ b/src/ai/client.py
+@@ -99,6 +99,7 @@ def _is_temperature_unsupported(message: str) -> bool:
+         or "only the default" in lowered
+         or "may only be set to 1" in lowered
+         or "only 1 is allowed" in lowered
++        or "not permitted" in lowered  # Anthropic: "temperature: Extra inputs are not permitted"
+     )
+ 
+ 
+diff --git a/src/scrapers/rss.py b/src/scrapers/rss.py
+index 0c57473..295e80e 100644
+--- a/src/scrapers/rss.py
++++ b/src/scrapers/rss.py
+@@ -1,5 +1,6 @@
+ """RSS feed scraper implementation."""
+ 
++import asyncio
+ import calendar
+ import hashlib
+ import logging
+@@ -86,11 +87,16 @@ class RSSScraper(BaseScraper):
+             lambda m: os.environ.get(m.group(1), m.group(0)).strip(),
+             str(source.url),
+         )
+-        response = await self.client.get(
+-            feed_url,
+-            follow_redirects=True,
+-            headers={"User-Agent": RSS_USER_AGENT},
+-        )
++        # Retry rate-limited feeds (Reddit RSS often answers 429) with backoff.
++        for attempt in range(4):
++            response = await self.client.get(
++                feed_url,
++                follow_redirects=True,
++                headers={"User-Agent": RSS_USER_AGENT},
++            )
++            if response.status_code != 429 or attempt == 3:
++                break
++            await asyncio.sleep(15 * (attempt + 1))
+         response.raise_for_status()
+         feed = feedparser.parse(response.text)
+         if feed.bozo and not feed.entries:

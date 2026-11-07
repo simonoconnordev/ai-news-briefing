@@ -1,0 +1,5 @@
+# Local Horizon checkout created by scripts/setup.ps1, run logs, and secrets
+Horizon/
+logs/
+.env
+subscribers.json

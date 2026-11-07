@@ -1,0 +1,115 @@
+{
+  "ai": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5-5",
+    "api_key_env": "ANTHROPIC_API_KEY",
+    "temperature": 0.3,
+    "max_tokens": 4096,
+    "throttle_sec": 0,
+    "analysis_concurrency": 2,
+    "enrichment_concurrency": 1,
+    "languages": ["en"]
+  },
+  "processing": {
+    "profiles_dir": "profiles",
+    "default_profile": "ai-news",
+    "profile_settings": {
+      "ai-news": {
+        "threshold": 6.0,
+        "topic_dedup": true
+      },
+      "tech-blog": {
+        "threshold": 5.0,
+        "topic_dedup": false
+      }
+    }
+  },
+  "display": {
+    "icon_style": "emoji"
+  },
+  "email": {
+    "enabled": true,
+    "smtp_server": "smtp.gmail.com",
+    "smtp_port": 465,
+    "smtp_username": null,
+    "imap_enabled": false,
+    "imap_server": "",
+    "imap_port": 993,
+    "email_address": "you@gmail.com",
+    "password_env": "EMAIL_PASSWORD",
+    "sender_name": "Horizon AI Daily",
+    "subscribe_keyword": "SUBSCRIBE",
+    "unsubscribe_keyword": "UNSUBSCRIBE"
+  },
+  "sources": {
+    "github": [],
+    "hackernews": {
+      "enabled": true,
+      "fetch_top_stories": 30,
+      "min_score": 100,
+      "category": "community",
+      "profile": "ai-news"
+    },
+    "rss": [
+      { "name": "Anthropic News", "url": "https://raw.githubusercontent.com/Olshansk/rss-feeds/main/feeds/feed_anthropic_news.xml", "enabled": true, "category": "labs", "profile": "ai-news", "content_extractor": "trafilatura" },
+      { "name": "OpenAI News", "url": "https://openai.com/news/rss.xml", "enabled": true, "category": "labs", "profile": "ai-news", "content_extractor": "trafilatura" },
+      { "name": "Google DeepMind", "url": "https://deepmind.google/blog/rss.xml", "enabled": true, "category": "labs", "profile": "ai-news", "content_extractor": "trafilatura" },
+      { "name": "Google AI Blog", "url": "https://blog.google/technology/ai/rss/", "enabled": true, "category": "labs", "profile": "ai-news" },
+      { "name": "Hugging Face Blog", "url": "https://huggingface.co/blog/feed.xml", "enabled": true, "category": "open-models", "profile": "tech-blog", "content_extractor": "trafilatura" },
+      { "name": "The Verge AI", "url": "https://www.theverge.com/rss/ai-artificial-intelligence/index.xml", "enabled": true, "category": "press", "profile": "ai-news" },
+      { "name": "TechCrunch AI", "url": "https://techcrunch.com/category/artificial-intelligence/feed/", "enabled": true, "category": "press", "profile": "ai-news" },
+      { "name": "Simon Willison", "url": "https://simonwillison.net/atom/everything/", "enabled": true, "category": "analysis", "profile": "ai-news" },
+      { "name": "Latent Space", "url": "https://www.latent.space/feed", "enabled": true, "category": "analysis", "profile": "tech-blog", "content_extractor": "trafilatura" },
+      { "name": "Interconnects", "url": "https://www.interconnects.ai/feed", "enabled": true, "category": "analysis", "profile": "tech-blog", "content_extractor": "trafilatura" },
+      { "name": "Import AI", "url": "https://importai.substack.com/feed", "enabled": true, "category": "analysis", "profile": "tech-blog" },
+      { "name": "smol AINews", "url": "https://news.smol.ai/rss.xml", "enabled": true, "category": "community", "profile": "ai-news" },
+      { "name": "Reddit: LocalLLaMA + MachineLearning", "url": "https://www.reddit.com/r/LocalLLaMA+MachineLearning/top/.rss?t=day&limit=25", "enabled": true, "category": "community", "profile": "ai-news" },
+      { "name": "Reddit: ClaudeAI + OpenAI + singularity", "url": "https://www.reddit.com/r/ClaudeAI+OpenAI+singularity/top/.rss?t=day&limit=25", "enabled": true, "category": "community", "profile": "ai-news" }
+    ],
+    "reddit": {
+      "enabled": false,
+      "fetch_comments": 5,
+      "subreddits": [
+        { "subreddit": "LocalLLaMA", "enabled": true, "sort": "top", "time_filter": "day", "fetch_limit": 15, "min_score": 150, "category": "community", "profile": "ai-news" },
+        { "subreddit": "MachineLearning", "enabled": true, "sort": "top", "time_filter": "day", "fetch_limit": 10, "min_score": 50, "category": "community", "profile": "ai-news" },
+        { "subreddit": "ClaudeAI", "enabled": true, "sort": "top", "time_filter": "day", "fetch_limit": 10, "min_score": 150, "category": "community", "profile": "ai-news" },
+        { "subreddit": "OpenAI", "enabled": true, "sort": "top", "time_filter": "day", "fetch_limit": 10, "min_score": 200, "category": "community", "profile": "ai-news" },
+        { "subreddit": "singularity", "enabled": true, "sort": "top", "time_filter": "day", "fetch_limit": 10, "min_score": 400, "category": "community", "profile": "ai-news" }
+      ],
+      "users": []
+    },
+    "twitter": { "enabled": false, "users": [], "keywords": [], "fetch_limit": 10 },
+    "openbb": { "enabled": false, "watchlists": [] },
+    "ossinsight": {
+      "enabled": true,
+      "period": "past_24_hours",
+      "languages": ["All", "Python", "TypeScript"],
+      "keywords": ["llm", "agent", "gpt", "claude", "mcp", "rag", "diffusion", "transformer", "inference", "model"],
+      "min_stars": 50,
+      "max_items": 10,
+      "category": "oss-trending",
+      "profile": "ai-news"
+    },
+    "telegram": { "enabled": false, "channels": [] },
+    "gdelt": { "enabled": false, "query": "artificial intelligence" },
+    "google_news": { "enabled": false, "query": "artificial intelligence" }
+  },
+  "collection": {
+    "time_window_hours": 24
+  },
+  "digest": {
+    "max_items": 20,
+    "profile_order": ["ai-news", "tech-blog"],
+    "category_groups": {
+      "labs": { "name": "Lab announcements", "limit": 6, "categories": ["labs"] },
+      "press": { "name": "Industry news", "limit": 4, "categories": ["press"] },
+      "community": { "name": "Community (Reddit / HN)", "limit": 6, "categories": ["community"] },
+      "analysis": { "name": "Analysis & deep dives", "limit": 4, "categories": ["analysis", "open-models"] },
+      "oss": { "name": "Trending repos", "limit": 3, "categories": ["oss-trending"] }
+    },
+    "default_group": "other",
+    "default_group_limit": 2
+  },
+  "webhook": { "enabled": false, "url_env": "HORIZON_WEBHOOK_URL" },
+  "wechat": { "enabled": false }
+}
