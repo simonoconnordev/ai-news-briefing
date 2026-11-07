@@ -48,7 +48,7 @@ A typical weekday run collects ~100 items and emails ~10, in about 6½ minutes a
 
 ## Fixes to Horizon
 
-Tested against Horizon commit [`d7406f7`](https://github.com/Thysrael/Horizon/commit/d7406f738c711df82b8f060fa1d5e9999d36cca0) (3 Nov 2026).
+Tested against Horizon commit [`d7406f7`](https://github.com/Thysrael/Horizon/commit/d7406f738c711df82b8f060fa1d5e9999d36cca0) (3 Nov 2026). Both fixes have been submitted upstream with tests: [Thysrael/Horizon#220](https://github.com/Thysrael/Horizon/pull/220) and [Thysrael/Horizon#221](https://github.com/Thysrael/Horizon/pull/221). The upstream version of the retry also honours `Retry-After`.
 
 1. **LLM calls all failing with 400.** Anthropic's API now rejects `temperature` with *"Extra inputs are not permitted"*. Horizon retries without it, but didn't recognise that wording. The fix adds one line to the error matcher in `src/ai/client.py`.
 2. **Reddit RSS rate limiting.** Reddit answers rapid RSS requests with 429. `src/scrapers/rss.py` now retries up to three times with 15/30/45-second backoff. The config also reads Reddit through two combined multi-subreddit feeds instead of Horizon's scraper, which Reddit blocks.
