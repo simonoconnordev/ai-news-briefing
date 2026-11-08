@@ -1,10 +1,12 @@
 # AI News Briefing
 
-> **Built on [Horizon](https://github.com/Thysrael/Horizon)**, an open-source LLM news aggregator by Thysrael (MIT). Horizon provides the pipeline engine. This repo is my adaptation of it: an AI-only scoring profile, curated sources and quotas, two bug fixes to Horizon's code, and Windows automation. It does not contain Horizon itself; `scripts/setup.ps1` clones it at the tested commit.
+> **Built on [Horizon](https://github.com/Thysrael/Horizon)**, an open-source LLM news aggregator by Thysrael (MIT). Horizon provides the pipeline engine. This repo is my adaptation of it: an AI-only scoring profile, curated sources and quotas, three bug fixes to Horizon's code, and Windows automation. It does not contain Horizon itself; `scripts/setup.ps1` clones it at the tested commit.
 
 A daily AI news briefing: the last 24 hours of AI news from 16 sources, scored by Claude against a custom rubric, de-duplicated, written up, and emailed every morning at 6:30.
 
 **[Read the case study →](https://simonoconnordev.github.io/ai-news-briefing/)** · [How it works in detail](https://simonoconnordev.github.io/ai-news-briefing/how-it-works.html)
+
+<img src="docs/img/briefing-email.png" width="480" alt="The top of the 7 November briefing email: a numbered contents list of scored stories, then the first story with its summary, background, impact, references and tags.">
 
 ## What's Horizon's and what's mine
 
@@ -13,7 +15,7 @@ A daily AI news briefing: the last 24 hours of AI news from 16 sources, scored b
 | Pipeline engine and source collectors | Tool selection: five approaches compared against written requirements |
 | LLM scoring framework and profile system | `profiles/ai-news`: AI-only relevance rule and rubric |
 | Duplicate merging, quota selection | 16 curated AI sources and category quotas, including combined Reddit RSS feeds |
-| Write-ups with web and history search | Two fixes to Horizon's code (`patches/`) |
+| Write-ups with web and history search | Three fixes to Horizon's code (`patches/`) |
 | Markdown archive, email delivery | Tuning of thresholds, model and concurrency; scheduling, logging and setup scripts |
 
 ## How it works
@@ -40,7 +42,7 @@ A typical weekday run collects ~100 items and emails ~10, in about 6½ minutes a
 |---|---|
 | [`config/config.json`](config/config.json) | Sources, model, score thresholds, category quotas, email settings |
 | [`profiles/ai-news/`](profiles/ai-news/) | Custom scoring and write-up profile: AI-only relevance rule and rubric |
-| [`patches/horizon-fixes.patch`](patches/horizon-fixes.patch) | Two fixes to Horizon (see below) |
+| [`patches/horizon-fixes.patch`](patches/horizon-fixes.patch) | Three fixes to Horizon (see below) |
 | [`scripts/setup.ps1`](scripts/setup.ps1) | Clones Horizon at the tested commit, applies the patch, installs, copies config |
 | [`scripts/run-horizon.ps1`](scripts/run-horizon.ps1) | What the scheduled task runs; writes a log per run |
 | [`scripts/register-task.ps1`](scripts/register-task.ps1) | Creates the daily Windows scheduled task |
@@ -48,10 +50,11 @@ A typical weekday run collects ~100 items and emails ~10, in about 6½ minutes a
 
 ## Fixes to Horizon
 
-Tested against Horizon commit [`d7406f7`](https://github.com/Thysrael/Horizon/commit/d7406f738c711df82b8f060fa1d5e9999d36cca0) (3 Nov 2026). Both fixes have been submitted upstream with tests: [Thysrael/Horizon#220](https://github.com/Thysrael/Horizon/pull/220) and [Thysrael/Horizon#221](https://github.com/Thysrael/Horizon/pull/221). The upstream version of the retry also honours `Retry-After`.
+Tested against Horizon commit [`d7406f7`](https://github.com/Thysrael/Horizon/commit/d7406f738c711df82b8f060fa1d5e9999d36cca0) (3 Nov 2026). The first two fixes have been submitted upstream with tests: [Thysrael/Horizon#220](https://github.com/Thysrael/Horizon/pull/220) and [Thysrael/Horizon#221](https://github.com/Thysrael/Horizon/pull/221). The upstream version of the retry also honours `Retry-After`.
 
 1. **LLM calls all failing with 400.** Anthropic's API now rejects `temperature` with *"Extra inputs are not permitted"*. Horizon retries without it, but didn't recognise that wording. The fix adds one line to the error matcher in `src/ai/client.py`.
 2. **Reddit RSS rate limiting.** Reddit answers rapid RSS requests with 429. `src/scrapers/rss.py` now retries up to three times with 15/30/45-second backoff. The config also reads Reddit through two combined multi-subreddit feeds instead of Horizon's scraper, which Reddit blocks.
+3. **HTML codes in the email.** Horizon escapes summary text for HTML when writing it, then again when building the email, so apostrophes and quotes arrived as `&#x27;` and `&quot;`. `src/services/email.py` now escapes only `<`, which still blocks raw HTML from feeds, and leaves the existing entities for Markdown to render. A new test in `tests/test_email.py` covers it.
 
 ## Setup (Windows)
 

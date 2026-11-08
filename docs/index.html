@@ -97,6 +97,7 @@ p { margin: 0 0 14px; }
 .sub { color: var(--muted); }
 
 figure { margin: 22px 0 8px; }
+.shot img { display: block; width: 100%; max-width: 640px; height: auto; border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 6px 24px rgb(21 32 59 / 0.10); }
 figcaption { font-size: 0.85rem; color: var(--muted); margin-top: 10px; max-width: 75ch; }
 .diagram { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; overflow-x: auto; }
 .diagram svg { display: block; width: 100%; height: auto; min-width: 760px; }
@@ -215,7 +216,7 @@ footer { padding-block: 48px 64px; color: var(--muted); font-size: 0.85rem; }
     <p class="tagline">An open-source news aggregator, adapted into a reliable daily AI briefing.</p>
     <div class="credit">
       <b>Built on Horizon, an open-source project</b>
-      <span>The news-processing engine is <a href="https://github.com/Thysrael/Horizon">Horizon</a> by Thysrael (MIT licence). My part was choosing it, adapting it for AI-only news, fixing two bugs that stopped it working, and automating it. The exact split is in the first section below.</span>
+      <span>The news-processing engine is <a href="https://github.com/Thysrael/Horizon">Horizon</a> by Thysrael (MIT licence). My part was choosing it, adapting it for AI-only news, fixing three bugs in its code, and automating it. The exact split is in the first section below.</span>
     </div>
     <p class="lede">Each morning it collects the last 24 hours of AI news from 16 sources, has Claude score every story against a rubric written for this project, merges duplicates, writes up the best ten or so, and emails the briefing before I'm up.</p>
     <p class="links"><a href="https://github.com/simonoconnordev/ai-news-briefing">View the code on GitHub</a><a href="how-it-works.html">How it works in detail</a></p>
@@ -238,7 +239,7 @@ footer { padding-block: 48px 64px; color: var(--muted); font-size: 0.85rem; }
   <div class="facts" role="list">
     <div role="listitem"><b>16 → 1</b><span>sources in, one email out</span></div>
     <div role="listitem"><b>~100 → 10</b><span>stories scored, then kept</span></div>
-    <div role="listitem"><b>4 fixes</b><span>to make it work in practice</span></div>
+    <div role="listitem"><b>5 fixes</b><span>to make it work in practice</span></div>
     <div role="listitem"><b>~6½ min</b><span>per run, fully unattended</span></div>
     <div role="listitem"><b>Open source</b><span>built on Horizon (MIT)</span></div>
   </div>
@@ -268,7 +269,7 @@ footer { padding-block: 48px 64px; color: var(--muted); font-size: 0.85rem; }
         <li><b>Tool selection:</b> compared five approaches against written requirements</li>
         <li><b>AI-only scoring profile:</b> relevance rule and rubric (<code>profiles/ai-news</code>)</li>
         <li><b>Sources and quotas:</b> 16 AI sources, with combined Reddit feeds to get around blocking</li>
-        <li><b>Two bug fixes</b> to Horizon's code: API error handling and rate-limit retry</li>
+        <li><b>Three bug fixes</b> to Horizon's code: API error handling, rate-limit retry and email formatting</li>
         <li><b>Tuning:</b> thresholds, model choice, and concurrency under rate limits</li>
         <li><b>Automation:</b> scheduled task, logging wrapper, setup scripts</li>
         <li><b>Documentation:</b> this case study and an operator guide</li>
@@ -303,7 +304,7 @@ footer { padding-block: 48px 64px; color: var(--muted); font-size: 0.85rem; }
     <table>
       <thead><tr><th>Option</th><th>What it is</th><th>Strengths</th><th>Why not / why</th><th>Verdict</th></tr></thead>
       <tbody>
-        <tr class="chosen"><td><b>Horizon</b><br><span class="sub mono">Thysrael/Horizon · ~12.8k ★ · MIT</span></td><td>Open-source Python news aggregator with LLM scoring</td><td>Many source types, per-profile scoring rubrics, AI-based duplicate merging, background enrichment with web search, email delivery</td><td>Covered every requirement and is actively maintained. Needed AI-specific configuration and two bug fixes</td><td><span class="verdict yes">Chosen</span></td></tr>
+        <tr class="chosen"><td><b>Horizon</b><br><span class="sub mono">Thysrael/Horizon · ~12.8k ★ · MIT</span></td><td>Open-source Python news aggregator with LLM scoring</td><td>Many source types, per-profile scoring rubrics, AI-based duplicate merging, background enrichment with web search, email delivery</td><td>Covered every requirement and is actively maintained. Needed AI-specific configuration and three bug fixes</td><td><span class="verdict yes">Chosen</span></td></tr>
         <tr><td><b>agents-radar</b><br><span class="sub mono">~1.2k ★</span></td><td>A ready-made daily digest published by someone else</td><td>No setup: subscribe by RSS or Telegram</td><td>Fixed sources, focused on AI developer tools, no control over filtering</td><td><span class="verdict no">Not chosen</span></td></tr>
         <tr><td><b>n8n templates</b></td><td>Visual workflows: RSS → LLM summary → email</td><td>Easy to read and change</td><td>Needs an n8n server. Templates do simple keyword filters, with no scoring rubric or duplicate merging</td><td><span class="verdict no">Not chosen</span></td></tr>
         <tr><td><b>Claude scheduled task</b></td><td>An AI assistant prompted to search the web each morning</td><td>Almost no setup and no API key</td><td>Results vary from day to day, with no fixed sources or repeatable scoring</td><td><span class="verdict no">Not chosen</span></td></tr>
@@ -320,7 +321,7 @@ footer { padding-block: 48px 64px; color: var(--muted); font-size: 0.85rem; }
   <p class="prose sub">Collection, filtering and scheduling run locally. Only the LLM calls, web search and email leave the machine.</p>
   <figure>
     <div class="diagram">
-      <svg viewBox="0 0 980 580" role="img" aria-label="Architecture diagram, colour-coded by ownership. My additions (orange outline): the scheduled task, PowerShell wrapper, config, secrets file and AI-news scoring profile, plus patches to the Fetch and Score steps. Horizon (grey): the pipeline engine and summary archive. Sources on the left feed the pipeline, which calls the Anthropic API and web search, then sends the briefing through Gmail SMTP to the inbox.">
+      <svg viewBox="0 0 980 580" role="img" aria-label="Architecture diagram, colour-coded by ownership. My additions (orange outline): the scheduled task, PowerShell wrapper, config, secrets file and AI-news scoring profile, plus patches to the Fetch, Score and Deliver steps. Horizon (grey): the pipeline engine and summary archive. Sources on the left feed the pipeline, which calls the Anthropic API and web search, then sends the briefing through Gmail SMTP to the inbox.">
         <defs>
           <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="arrowhead" d="M0,0 L10,5 L0,10 z"/></marker>
           <marker id="ahd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="arrowhead-dawn" d="M0,0 L10,5 L0,10 z"/></marker>
@@ -413,6 +414,7 @@ footer { padding-block: 48px 64px; color: var(--muted); font-size: 0.85rem; }
         <path class="wire" d="M858 378 L858 426" marker-end="url(#ah)"/>
         <circle class="dot-mine" cx="392" cy="199" r="5"/>
         <circle class="dot-mine" cx="584" cy="199" r="5"/>
+        <circle class="dot-mine" cx="680" cy="245" r="5"/>
         <g>
           <rect class="box-accent" x="20" y="548" width="18" height="14" rx="3"/><text class="t-small" x="46" y="560">My additions</text>
           <rect class="box" x="160" y="548" width="18" height="14" rx="3"/><text class="t-small" x="186" y="560">Horizon (open source) or third party</text>
@@ -449,7 +451,7 @@ footer { padding-block: 48px 64px; color: var(--muted); font-size: 0.85rem; }
 <!-- ======================================================= -->
 <section class="wrap" id="problems">
   <div class="kicker">Making it work</div>
-  <h2>Four problems found in testing, and how they were fixed</h2>
+  <h2>Five problems found in testing, and how they were fixed</h2>
   <p class="prose">The software installed cleanly but didn't work as intended on the first real runs. Each problem was spotted in the run logs or the briefing itself, reproduced in isolation where possible, and fixed with the smallest change that solved it.</p>
 
   <div class="cases">
@@ -507,6 +509,19 @@ footer { padding-block: 48px 64px; color: var(--muted); font-size: 0.85rem; }
         <div class="res"><b>Result</b><p>The first scheduled run after the change wrote up every item in full.</p></div>
       </div>
     </article>
+    <article class="case">
+      <h3>5. The email was full of HTML codes</h3>
+      <div class="steps">
+        <div class="sym"><b>Symptom</b><p>Taking a screenshot of a real briefing for this page showed apostrophes and quotes as <code>&amp;#x27;</code> and <code>&amp;quot;</code>, "R&amp;D" as <code>R&amp;amp;D</code>, and the contents list run together into one paragraph.</p></div>
+        <div class="dia"><b>Diagnosis</b><p>Horizon makes feed text safe for HTML when it writes the summary, then escapes it a second time when building the email, so the codes appear literally. The second step exists to stop feed content injecting HTML, so removing it outright wasn't an option.</p></div>
+        <div class="fix"><b>Fix</b><p>Escape only <code>&lt;</code> in the email step, which is enough to block raw HTML, and leave the summary's existing codes for Markdown to render. Also add the blank line Markdown needs before a list.</p></div>
+        <div class="res"><b>Result</b><p>Clean text, with feed content that tries to inject <code>&lt;script&gt;</code>, <code>&lt;img onerror&gt;</code> or <code>&lt;iframe&gt;</code> still shown as plain text. A new test fails on the old code and passes on the new.</p></div>
+      </div>
+      <pre class="code" aria-label="Code change in src/services/email.py"><span class="fn">src/services/email.py · send_daily_summary()</span><span class="del">-        safe_summary = html.escape(cleaned_summary)</span>
+<span class="add">+        safe_summary = _prepare_email_markdown(cleaned_summary)</span>
+<span class="cm">         # new helper: escape "&lt;" only, keep the summary's entities,</span>
+<span class="cm">         # and add the blank line Markdown needs before a list</span></pre>
+    </article>
   </div>
 </section>
 
@@ -548,6 +563,10 @@ footer { padding-block: 48px 64px; color: var(--muted); font-size: 0.85rem; }
     <div><b>6 min 26 s</b><span>full run, measured through the scheduler</span></div>
     <div><b>160–200k</b><span>LLM tokens per run, about 85% input</span></div>
   </div>
+  <figure class="shot">
+    <img src="img/briefing-email.png" width="760" height="1060" alt="The 7 November briefing email: a contents list of four scored stories, then the first story, a METR report on Anthropic's pace of AI development, with its summary, Background, Impact, references and tags." loading="lazy">
+    <figcaption>The 7 November briefing as it renders in email, after fix 5. Only the top of the email is shown.</figcaption>
+  </figure>
   <div class="sample">
     <h4>The Ultimate MoE Training Handbook: training Mixture-of-Experts models with Megatron-LM</h4>
     <div class="meta"><span class="score">★ 6.0/10</span> · Reddit: LocalLLaMA + MachineLearning</div>
@@ -581,7 +600,7 @@ footer { padding-block: 48px 64px; color: var(--muted); font-size: 0.85rem; }
   <h2>Where it could go</h2>
   <ul class="next">
     <li><b>Run it in a container on a small cloud server</b>, so it no longer depends on the PC being on at 6:30. This is where the Docker support starts to pay off.</li>
-    <li><b>Both fixes have been submitted to Horizon as pull requests</b>, since other users hit the same errors: <a href="https://github.com/Thysrael/Horizon/pull/220">#220, the temperature error</a> and <a href="https://github.com/Thysrael/Horizon/pull/221">#221, the rate-limit retry</a>. Both include tests.</li>
+    <li><b>The first two fixes have been submitted to Horizon as pull requests</b>, since other users hit the same errors: <a href="https://github.com/Thysrael/Horizon/pull/220">#220, the temperature error</a> and <a href="https://github.com/Thysrael/Horizon/pull/221">#221, the rate-limit retry</a>. Both include tests. The email fix is newer and could follow as a third.</li>
     <li><b>Score with a cheaper model and write up with a stronger one</b>, once there's enough usage data to measure the cost and quality difference.</li>
     <li><b>Add a feedback loop</b>: mark items as useful or not, and feed that back into the rubric.</li>
   </ul>
