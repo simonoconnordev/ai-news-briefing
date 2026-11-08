@@ -72,5 +72,5 @@ Then:
 
 ## Notes
 
-- Built with [Claude Code](https://claude.com/claude-code). I set the goals, chose the approach and reviewed every test run. Claude Code did the research, configuration and code fixes.
+- Directed by me, implemented with [Claude Code](https://claude.com/claude-code), Anthropic's AI coding agent. The requirements, tool choice, trade-off decisions and sign-off on every test run were mine; Claude Code did the research, configuration and code fixes, and no change was accepted until a real run showed it working.
 - Released under the MIT License. Horizon is © Thysrael, also MIT. See [LICENSE](LICENSE).
